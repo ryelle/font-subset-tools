@@ -1,0 +1,27 @@
+{
+	"name": "@ryelle/next-font-subset",
+	"version": "1.0.0",
+	"description": "A Next.js extension to add support for subsetting local files.",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"type": "commonjs",
+	"scripts": {
+		"build": "tsc",
+		"prepublishOnly": "npm run build",
+		"test": "jest -c ../../jest.config.js packages/plugin"
+	},
+	"keywords": [
+		"nextjs",
+		"next.js",
+		"subset",
+		"fonts"
+	],
+	"author": "ryelle",
+	"license": "GPL-2.0-or-later",
+	"devDependencies": {
+		"@ryelle/font-subset-loader": "^1.0.0"
+	},
+	"peerDependencies": {
+		"next": "^15.0.0"
+	}
+}

@@ -1,0 +1,12 @@
+/* stylelint-disable */
+@font-face {
+	font-family: "Noto Sans";
+	src: url(./font.woff2) format("woff2");
+	font-weight: 100 900;
+	font-stretch: 100%;
+	font-display: swap;
+}
+
+body {
+	font-family: "Noto Sans", sans-serif;
+}
