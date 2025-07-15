@@ -2,17 +2,13 @@ import path from "path";
 import webpack from "webpack";
 import { createFsFromVolume, Volume } from "memfs";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
-
-interface CompilerOptions {
-	name?: string;
-	[key: string]: unknown;
-}
+import FontSubsetPlugin, { FontSubsetterPluginOptions } from "../dist/plugin";
 
 const outputFileSystem = createFsFromVolume(new Volume());
 
 export function compiler(
 	fixture: string,
-	options: CompilerOptions = {},
+	options: FontSubsetterPluginOptions = {},
 ): Promise<webpack.Stats> {
 	const compiler = webpack({
 		context: __dirname,
@@ -21,30 +17,20 @@ export function compiler(
 			path: path.resolve(__dirname),
 			filename: "bundle.js",
 		},
-		plugins: [new MiniCssExtractPlugin()],
+		plugins: [new MiniCssExtractPlugin(), new FontSubsetPlugin(options)],
 		module: {
 			rules: [
 				{
 					test: /\.css$/,
 					use: [MiniCssExtractPlugin.loader, "css-loader"],
 				},
-				{
-					test: /\.(woff2?|ttf|eot|svg)$/,
-					type: "asset",
-					use: {
-						loader: path.resolve(__dirname, "../dist/index.js"),
-						options,
-					},
-				},
 			],
 		},
 	});
 
-	compiler.outputFileSystem =
-		outputFileSystem as webpack.Compiler["outputFileSystem"];
-	(
-		outputFileSystem as typeof outputFileSystem & { join: typeof path.join }
-	).join = path.join.bind(path);
+	compiler.outputFileSystem = outputFileSystem as webpack.Compiler["outputFileSystem"];
+	(outputFileSystem as typeof outputFileSystem & { join: typeof path.join }).join =
+		path.join.bind(path);
 
 	return new Promise((resolve, reject) => {
 		compiler.run((err, stats) => {
@@ -63,8 +49,6 @@ export function getAssetOutput(stats: webpack.Stats, filename: string): string {
 	if (!asset) {
 		return "";
 	}
-	const output = outputFileSystem?.readFileSync(
-		path.resolve(__dirname, asset.name),
-	);
+	const output = outputFileSystem?.readFileSync(path.resolve(__dirname, asset.name));
 	return output.toString();
 }

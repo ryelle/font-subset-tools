@@ -28,11 +28,15 @@ export function getUnicodeRange(unicodes: Array<string>): string {
 	return rangeString.replace(/,$/, "");
 }
 
-export function getCss(filePath: string, unicodes: Array<string>): string {
+export function getCssFromFile(filePath: string, unicodes: Array<string>): string {
 	const fontBuffer = readFileSync(filePath);
+	return getCss(fontBuffer, filePath, unicodes);
+}
+
+export function getCss(fontBuffer: Buffer, filePath: string, unicodes: Array<string>): string {
 	const metadata = fontace(fontBuffer);
 
-	let css = ["@font-face {"];
+	const css = ["@font-face {"];
 	css.push(`\tfont-family: "${metadata.family}";`);
 	css.push(`\tfont-style: ${metadata.style};`);
 	css.push(`\tfont-weight: ${metadata.weight};`);
@@ -41,5 +45,6 @@ export function getCss(filePath: string, unicodes: Array<string>): string {
 	css.push(`\tunicode-range: ${metadata.unicodeRange};`);
 	css.push(`\tunicode-range: ${getUnicodeRange(unicodes)};`);
 	css.push("}");
+
 	return css.join("\n");
 }

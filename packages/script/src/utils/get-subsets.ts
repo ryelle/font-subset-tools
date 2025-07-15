@@ -19,15 +19,15 @@ export interface ContentsApiResponse {
 	type: string;
 }
 
-const CACHE_PATH =
-	process.env.CACHE_DIR || path.resolve(__dirname, "../../tmp");
+const CACHE_PATH = process.env.CACHE_DIR || path.resolve(__dirname, "../../tmp");
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 function getSubsetLabel(fileName: string): string {
+	let label = fileName.replace(/(.*)_.*(\.(?:txt|nam))$/, "$1$2");
 	if (fileName.includes("-chinese")) {
-		return fileName.replace(/((.*)-(.*))_.*(\.(?:txt|nam))$/, "$3-$2$4");
+		label = fileName.replace(/((.*)-(.*))_.*(\.(?:txt|nam))$/, "$3-$2$4");
 	}
-	return fileName.replace(/(.*)_.*(\.(?:txt|nam))$/, "$1$2");
+	return label.replace(/\.(txt|nam)$/, "");
 }
 
 async function getRemoteOrCachedFiles(
@@ -46,7 +46,7 @@ async function getRemoteOrCachedFiles(
 		}
 		for (const file of files) {
 			const name = getSubsetLabel(file);
-			const path = `${cachePath}/${name}`;
+			const path = `${cachePath}/${file}`;
 			subsets.push({ name, path });
 		}
 	} catch {
@@ -59,13 +59,9 @@ async function getRemoteOrCachedFiles(
 		const fileList: Array<ContentsApiResponse> = await response.json();
 		for (let i = 0; i < fileList.length; i++) {
 			const file = fileList[i];
-			if (
-				file.type === "file" &&
-				file.download_url &&
-				/(txt|nam)$/.test(file.name)
-			) {
+			if (file.type === "file" && file.download_url && /(txt|nam)$/.test(file.name)) {
 				const name = getSubsetLabel(file.name);
-				const path = `${cachePath}/${name}`;
+				const path = `${cachePath}/${file.name}`;
 				debug(`Downloading ${name}`);
 				const fileResponse = await fetch(file.download_url);
 				const body = await fileResponse.text();
@@ -77,9 +73,7 @@ async function getRemoteOrCachedFiles(
 	return subsets;
 }
 
-export async function getSubsets(
-	revalidateCache: boolean = false,
-): Promise<Array<FileItem>> {
+export async function getSubsets(revalidateCache: boolean = false): Promise<Array<FileItem>> {
 	const subsets: Array<FileItem> = [];
 	const _subsets = await getRemoteOrCachedFiles(
 		"https://api.github.com/repos/googlefonts/nam-files/contents/Lib/gfsubsets/data",
@@ -95,10 +89,7 @@ export async function getSubsets(
 	slices: for (let i = 0; i < _slices.length; i++) {
 		const item = _slices[i];
 		for (let j = 0; j < subsets.length; j++) {
-			if (
-				subsets[j].name.replace(/(txt|nam)$/, "") ===
-				item.name.replace(/(txt|nam)$/, "")
-			) {
+			if (subsets[j].name === item.name) {
 				subsets[j] = item;
 				continue slices;
 			}

@@ -26,5 +26,8 @@
 	},
 	"peerDependencies": {
 		"webpack": "^5.0.0"
+	},
+	"dependencies": {
+		"webpack-sources": "^3.3.3"
 	}
 }
