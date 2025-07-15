@@ -1,27 +1,36 @@
 import path from "path";
 import webpack from "webpack";
 import { createFsFromVolume, Volume } from "memfs";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
 
 interface CompilerOptions {
 	name?: string;
 	[key: string]: unknown;
 }
 
-export default (
+const outputFileSystem = createFsFromVolume(new Volume());
+
+export function compiler(
 	fixture: string,
 	options: CompilerOptions = {},
-): Promise<webpack.Stats> => {
+): Promise<webpack.Stats> {
 	const compiler = webpack({
 		context: __dirname,
-		entry: `./${fixture}`,
+		entry: `./fixtures/${fixture}`,
 		output: {
 			path: path.resolve(__dirname),
 			filename: "bundle.js",
 		},
+		plugins: [new MiniCssExtractPlugin()],
 		module: {
 			rules: [
 				{
+					test: /\.css$/,
+					use: [MiniCssExtractPlugin.loader, "css-loader"],
+				},
+				{
 					test: /\.(woff2?|ttf|eot|svg)$/,
+					type: "asset",
 					use: {
 						loader: path.resolve(__dirname, "../dist/index.js"),
 						options,
@@ -31,7 +40,6 @@ export default (
 		},
 	});
 
-	const outputFileSystem = createFsFromVolume(new Volume());
 	compiler.outputFileSystem =
 		outputFileSystem as webpack.Compiler["outputFileSystem"];
 	(
@@ -46,4 +54,17 @@ export default (
 			resolve(stats!);
 		});
 	});
-};
+}
+
+export function getAssetOutput(stats: webpack.Stats, filename: string): string {
+	const assets = stats?.compilation.getAssets() || [];
+
+	const asset = assets.find((a) => a.name === filename);
+	if (!asset) {
+		return "";
+	}
+	const output = outputFileSystem?.readFileSync(
+		path.resolve(__dirname, asset.name),
+	);
+	return output.toString();
+}

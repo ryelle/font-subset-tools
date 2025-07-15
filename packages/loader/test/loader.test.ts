@@ -1,15 +1,20 @@
 /**
  * @jest-environment node
  */
-import compiler from "./compiler";
+import { compiler, getAssetOutput } from "./compiler";
 
-describe("Loader", async () => {
+describe("Loader", () => {
 	test("Process a font", async () => {
-		const stats = await compiler("example-style.css", {
+		const stats = await compiler("example.js", {
 			subsets: ["latin", "cyrillic"],
 		});
-		const output = stats.toJson({ source: true }).modules?.[0]?.source;
-
+		const assets = stats?.compilation.getAssets() || [];
+		// Have we subset into two fonts?
+		// really, this should use "woff2" since the subsetter converts too.
+		const fontAssets = assets.filter((a) => a.name.endsWith(".ttf"));
+		expect(fontAssets).toHaveLength(2);
+		// Check the CSS as well.
+		const output = getAssetOutput(stats, "main.css");
 		expect(output).toContain("unicode subsets");
 	});
 });

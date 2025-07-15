@@ -19,7 +19,10 @@
 	"license": "GPL-2.0-or-later",
 	"devDependencies": {
 		"@types/webpack": "^5.0.0",
-		"memfs": "^4.17.2"
+		"css-loader": "^7.1.2",
+		"memfs": "^4.17.2",
+		"mini-css-extract-plugin": "^2.9.2",
+		"style-loader": "^4.0.0"
 	},
 	"peerDependencies": {
 		"webpack": "^5.0.0"
