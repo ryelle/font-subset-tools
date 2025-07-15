@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 import { fontace } from "fontace";
-import { getCss, getUnicodeRange } from "../get-css";
+import { getCssFromFile, getUnicodeRange } from "../src/get-css";
 import { readFileSync } from "node:fs";
 
 jest.mock("node:fs", () => {
@@ -21,7 +21,7 @@ const FONT = {
 	weight: "300 800",
 };
 
-describe("getCss", () => {
+describe("getCssFromFile", () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		(fontace as jest.Mock).mockImplementation(() => {
@@ -33,7 +33,7 @@ describe("getCss", () => {
 	});
 
 	test("returns CSS and unicode for a variable font", () => {
-		const css = getCss("./font.woff2", ["A", "B", "C"]);
+		const css = getCssFromFile("./font.woff2", ["A", "B", "C"]);
 		expect(css).toContain("@font-face");
 		expect(css).toContain('font-family: "MockFont";');
 		expect(css).toContain("font-style: normal;");
@@ -49,7 +49,7 @@ describe("getCss", () => {
 				style: "italic",
 			};
 		});
-		const css = getCss("./font.woff2", ["A", "B", "C"]);
+		const css = getCssFromFile("./font.woff2", ["A", "B", "C"]);
 		expect(css).toContain("@font-face");
 		expect(css).toContain('font-family: "MockFont";');
 		expect(css).toContain("font-style: italic;");
@@ -65,7 +65,7 @@ describe("getCss", () => {
 				weight: "400",
 			};
 		});
-		const css = getCss("./font.woff2", ["A", "B", "C"]);
+		const css = getCssFromFile("./font.woff2", ["A", "B", "C"]);
 		expect(css).toContain("@font-face");
 		expect(css).toContain('font-family: "MockFont";');
 		expect(css).toContain("font-style: normal;");
@@ -75,7 +75,7 @@ describe("getCss", () => {
 	});
 
 	test("returns CSS with different unicode-range for different unicodes", () => {
-		const css = getCss("./font.woff2", ["0", "1", "2"]);
+		const css = getCssFromFile("./font.woff2", ["0", "1", "2"]);
 		expect(css).toContain("unicode-range: U+30-32");
 	});
 });

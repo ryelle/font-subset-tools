@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 import fs from "node:fs/promises";
 import { getMockedFetchResponse, getMockedReaddirResponse } from "./__data__/files";
-import { getSubsets } from "../get-subsets";
+import { CACHE_PATH, getSubsets } from "../src/get-subsets";
 
 jest.mock("node:fs/promises", () => {
 	return {
@@ -32,49 +32,51 @@ describe("getSubsets", () => {
 		const result = await getSubsets();
 		expect(result).toHaveLength(5);
 		expect(result).toContainEqual({
-			name: "latin.nam",
-			path: `${process.env.CACHE_DIR}/subsets/latin.nam`,
+			name: "latin",
+			path: `${CACHE_PATH}/subsets/latin_unique-glyphs.nam`,
 		});
 		expect(result).toContainEqual({
-			name: "korean.txt",
-			path: `${process.env.CACHE_DIR}/slices/korean.txt`,
+			name: "korean",
+			path: `${CACHE_PATH}/slices/korean_default.txt`,
 		});
 		expect(result).toContainEqual({
-			name: "chinese-traditional.txt",
-			path: `${process.env.CACHE_DIR}/slices/chinese-traditional.txt`,
+			name: "chinese-traditional",
+			path: `${CACHE_PATH}/slices/traditional-chinese_default.txt`,
 		});
 		expect(result).not.toContainEqual({
-			name: "chinese-traditional.nam",
-			path: `${process.env.CACHE_DIR}/subsets/chinese-traditional.nam`,
+			name: "chinese-traditional",
+			path: `${CACHE_PATH}/subsets/chinese-traditional.nam`,
 		});
 	});
 
 	test("It should load the subsets from local files", async () => {
-		(fs.readdir as jest.Mock).mockImplementation(async (...args: unknown[]): Promise<Array<string>> => {
-			const dir = args[0] as string;
-			return Promise.resolve(getMockedReaddirResponse(dir));
-		});
-		(fs.stat as jest.Mock).mockImplementation(async (): Promise<any> => {
+		(fs.readdir as jest.Mock).mockImplementation(
+			async (...args: unknown[]): Promise<Array<string>> => {
+				const dir = args[0] as string;
+				return Promise.resolve(getMockedReaddirResponse(dir));
+			},
+		);
+		(fs.stat as jest.Mock).mockImplementation(async (): Promise<{ mtimeMs: number }> => {
 			return Promise.resolve({ mtimeMs: Date.now() });
 		});
 
 		const result = await getSubsets();
 		expect(result).toHaveLength(5);
 		expect(result).toContainEqual({
-			name: "latin.nam",
-			path: `${process.env.CACHE_DIR}/subsets/latin.nam`,
+			name: "latin",
+			path: `${CACHE_PATH}/subsets/latin_unique-glyphs.nam`,
 		});
 		expect(result).toContainEqual({
-			name: "korean.txt",
-			path: `${process.env.CACHE_DIR}/slices/korean.txt`,
+			name: "korean",
+			path: `${CACHE_PATH}/slices/korean_default.txt`,
 		});
 		expect(result).toContainEqual({
-			name: "chinese-traditional.txt",
-			path: `${process.env.CACHE_DIR}/slices/chinese-traditional.txt`,
+			name: "chinese-traditional",
+			path: `${CACHE_PATH}/slices/traditional-chinese_default.txt`,
 		});
 		expect(result).not.toContainEqual({
-			name: "chinese-traditional.nam",
-			path: `${process.env.CACHE_DIR}/subsets/chinese-traditional.nam`,
+			name: "chinese-traditional",
+			path: `${CACHE_PATH}/subsets/chinese-traditional.nam`,
 		});
 	});
 });

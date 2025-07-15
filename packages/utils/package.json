@@ -1,5 +1,5 @@
 {
-	"name": "@ryelle/font-subset-script",
+	"name": "@ryelle/font-subset-utils",
 	"version": "1.0.0",
 	"description": "",
 	"main": "./dist/index.js",
@@ -8,7 +8,7 @@
 	"scripts": {
 		"build": "tsc",
 		"prepublishOnly": "npm run build",
-		"test": "jest -c ../../jest.config.js packages/script"
+		"test": "jest -c ../../jest.config.js packages/utils"
 	},
 	"keywords": [
 		"webpack",

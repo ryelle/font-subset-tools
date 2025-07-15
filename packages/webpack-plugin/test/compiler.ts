@@ -2,7 +2,8 @@ import path from "path";
 import webpack from "webpack";
 import { createFsFromVolume, Volume } from "memfs";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
-import FontSubsetPlugin, { FontSubsetterPluginOptions } from "../dist/plugin";
+import FontSubsetPlugin from "../dist";
+import { FontSubsetterPluginOptions } from "../dist/types";
 
 const outputFileSystem = createFsFromVolume(new Volume());
 

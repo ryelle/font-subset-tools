@@ -1,18 +1,8 @@
+import path from "node:path";
 import { Compiler, Compilation } from "webpack";
 import { Source, RawSource } from "webpack-sources";
-import { buildFont, getSubsets, getUnicodes, getCss } from "../../script";
-import path from "node:path";
-
-export type FontSubsetterPluginOptions = {
-	test?: RegExp;
-	subsets?: Array<string>;
-};
-
-type FontAsset = {
-	source: string;
-	subsets: Array<{ file: string; css: string }>;
-};
-type FontAssetList = Array<FontAsset>;
+import { FontSubsetterPluginOptions, FontAsset, FontAssetList } from "./types";
+import { buildFont, getSubsets, getUnicodes, getCss, swapFontAssets } from "../../utils";
 
 function getBufferFromAsset(asset: Source): Buffer {
 	// asset.source() can return string or Buffer
@@ -100,13 +90,12 @@ class FontSubsetPlugin {
 				if (filename.endsWith(".css")) {
 					const asset = compilation.assets[filename];
 					const css = asset.source().toString();
-					console.log(css, JSON.stringify(this.fontAssets));
-					// try {
-					// 	// const editedCss =
-					// 	compilation.assets[filename] = new RawSource(editedCss);
-					// } catch (err) {
-					// 	compilation.errors.push(err as Error);
-					// }
+					try {
+						const newCss = swapFontAssets(css, this.fontAssets);
+						compilation.assets[filename] = new RawSource(newCss);
+					} catch (err) {
+						compilation.errors.push(err as Error);
+					}
 				}
 			});
 		});

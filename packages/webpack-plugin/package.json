@@ -1,14 +1,14 @@
 {
-	"name": "@ryelle/font-subset-loader",
+	"name": "@ryelle/font-subset-webpack-plugin",
 	"version": "1.0.0",
-	"description": "A webpack loader split fonts into locale-specific subsets.",
+	"description": "A webpack plugin to split fonts into locale-specific subsets.",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "commonjs",
 	"scripts": {
 		"build": "tsc",
 		"prepublishOnly": "npm run build",
-		"test": "jest -c ../../jest.config.js packages/loader"
+		"test": "jest -c ../../jest.config.js packages/webpack-plugin"
 	},
 	"keywords": [
 		"webpack",

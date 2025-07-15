@@ -1,6 +1,5 @@
 import { mkdir, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { debug } from "./log";
 
 export interface FileItem {
 	name: string;
@@ -19,7 +18,7 @@ export interface ContentsApiResponse {
 	type: string;
 }
 
-const CACHE_PATH = process.env.CACHE_DIR || path.resolve(__dirname, "../../tmp");
+export const CACHE_PATH = path.resolve(__dirname, "../../tmp");
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 function getSubsetLabel(fileName: string): string {
@@ -62,7 +61,6 @@ async function getRemoteOrCachedFiles(
 			if (file.type === "file" && file.download_url && /(txt|nam)$/.test(file.name)) {
 				const name = getSubsetLabel(file.name);
 				const path = `${cachePath}/${file.name}`;
-				debug(`Downloading ${name}`);
 				const fileResponse = await fetch(file.download_url);
 				const body = await fileResponse.text();
 				await writeFile(path, body);
