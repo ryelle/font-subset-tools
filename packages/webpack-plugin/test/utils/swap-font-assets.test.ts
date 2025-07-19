@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { swapFontAssets } from "../src/swap-font-assets";
+import { swapFontAssets } from "../../src/utils/swap-font-assets";
 
 describe("swapFontAssets", () => {
 	test.only("It should update the font-face rules", () => {

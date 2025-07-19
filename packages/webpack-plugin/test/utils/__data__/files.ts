@@ -1,4 +1,4 @@
-import { CACHE_PATH, ContentsApiResponse } from "../../src/get-subsets";
+import { CACHE_PATH, ContentsApiResponse } from "../../../src/utils/get-subsets";
 import path from "node:path";
 
 export const MOCK_FILE_INFO: Record<string, string> = {};

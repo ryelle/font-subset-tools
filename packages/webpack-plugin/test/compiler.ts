@@ -13,7 +13,7 @@ export function compiler(
 ): Promise<webpack.Stats> {
 	const compiler = webpack({
 		context: __dirname,
-		entry: `./fixtures/${fixture}`,
+		entry: `./__data__/${fixture}`,
 		output: {
 			path: path.resolve(__dirname),
 			filename: "bundle.js",

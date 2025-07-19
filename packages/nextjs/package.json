@@ -8,7 +8,7 @@
 	"scripts": {
 		"build": "tsc",
 		"prepublishOnly": "npm run build",
-		"test": "jest -c ../../jest.config.js packages/plugin"
+		"test": "jest -c ../../jest.config.js packages/nextjs"
 	},
 	"keywords": [
 		"nextjs",
@@ -18,6 +18,9 @@
 	],
 	"author": "ryelle",
 	"license": "GPL-2.0-or-later",
+	"devDependencies": {
+		"@ryelle/font-subset-webpack-plugin": "^1.0.0"
+	},
 	"peerDependencies": {
 		"next": "^15.0.0"
 	}

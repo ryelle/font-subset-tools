@@ -2,11 +2,11 @@
  * @jest-environment node
  */
 import { compiler, getAssetOutput } from "./compiler";
-import subsetUtils from "@ryelle/font-subset-utils";
+import subsetUtils from "../dist/utils";
 
-jest.mock("@ryelle/font-subset-utils", () => {
+jest.mock("../dist/utils", () => {
 	return {
-		...jest.requireActual("@ryelle/font-subset-utils"),
+		...jest.requireActual("../dist/utils"),
 		getSubsets: jest.fn(),
 		getUnicodes: jest.fn(),
 	};

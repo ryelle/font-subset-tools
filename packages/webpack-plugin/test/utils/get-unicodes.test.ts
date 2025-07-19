@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 import lineByLine from "n-readlines";
 import fs from "fs/promises";
 import { MOCK_FILE_INFO } from "./__data__/files";
-import { getUnicodes } from "../src/get-unicodes";
-import { CACHE_PATH } from "../src/get-subsets";
+import { getUnicodes } from "../../src/utils/get-unicodes";
+import { CACHE_PATH } from "../../src/utils/get-subsets";
 
 jest.mock("n-readlines", () => jest.fn());
 jest.mock("fs/promises", () => {

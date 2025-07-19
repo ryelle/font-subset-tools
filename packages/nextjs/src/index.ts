@@ -1,23 +1,22 @@
 import { NextConfig } from "next";
-import FontSubsetPlugin from "@ryelle/font-subset-webpack-plugin";
+import FontSubsetPlugin, {
+	type FontSubsetterPluginOptions,
+} from "@ryelle/font-subset-webpack-plugin";
 
-// type PluginOptions = Record<string, unknown>;
-
-export default function withMyExtension(
+export default function withFontSubset(
 	nextConfig: NextConfig = {},
-	// options: PluginOptions = {},
+	options: FontSubsetterPluginOptions = {},
 ) {
 	return {
 		...nextConfig,
 		// @ts-expect-error - Undefined arguments.
 		webpack(config, opts) {
-			config.plugins.push(new FontSubsetPlugin(opts));
+			config.plugins.push(new FontSubsetPlugin(options));
 
 			if (typeof nextConfig.webpack === "function") {
 				return nextConfig.webpack(config, opts);
 			}
 			return config;
 		},
-		// You can add more custom logic here
 	};
 }

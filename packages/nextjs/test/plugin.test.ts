@@ -1,8 +1,8 @@
-import withMyExtension from "../src/index";
+import withFontSubset from "../src/index";
 
-describe("withMyExtension", () => {
+describe("withFontSubset", () => {
 	test("should return a Next.js config with webpack modifications", () => {
-		const config = withMyExtension();
+		const config = withFontSubset();
 
 		expect(config).toBeDefined();
 		expect(typeof config.webpack).toBe("function");
@@ -15,7 +15,7 @@ describe("withMyExtension", () => {
 			},
 		};
 
-		const config = withMyExtension(existingConfig);
+		const config = withFontSubset(existingConfig);
 
 		expect(config.env).toEqual(existingConfig.env);
 		expect(typeof config.webpack).toBe("function");

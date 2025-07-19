@@ -2,13 +2,7 @@ import path from "node:path";
 import { Compiler, Compilation } from "webpack";
 import { Source, RawSource } from "webpack-sources";
 import { FontSubsetterPluginOptions, FontAsset, FontAssetList } from "./types";
-import {
-	buildFont,
-	getSubsets,
-	getUnicodes,
-	getCss,
-	swapFontAssets,
-} from "@ryelle/font-subset-utils";
+import { buildFont, getSubsets, getUnicodes, getCss, swapFontAssets } from "./utils";
 
 function getBufferFromAsset(asset: Source): Buffer {
 	// asset.source() can return string or Buffer
@@ -128,4 +122,5 @@ class FontSubsetPlugin {
 	}
 }
 
-export default FontSubsetPlugin;
+export { FontSubsetPlugin as default };
+export type { FontSubsetterPluginOptions };

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 import { fontace } from "fontace";
-import { getCssFromFile, getUnicodeRange } from "../src/get-css";
+import { getCssFromFile, getUnicodeRange } from "../../src/utils/get-css";
 import { readFileSync } from "node:fs";
 
 jest.mock("node:fs", () => {
