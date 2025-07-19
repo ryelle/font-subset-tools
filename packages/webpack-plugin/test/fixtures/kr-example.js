@@ -1,0 +1,1 @@
+require("./kr-style.css");
