@@ -15,4 +15,5 @@ module.exports = {
 	},
 	collectCoverageFrom: ["packages/**/src/**/*.ts", "!packages/**/src/**/*.d.ts"],
 	moduleFileExtensions: ["ts", "js", "json"],
+	setupFilesAfterEnv: ["./jest.setup.ts"],
 };
