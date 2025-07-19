@@ -2,7 +2,13 @@ import path from "node:path";
 import { Compiler, Compilation } from "webpack";
 import { Source, RawSource } from "webpack-sources";
 import { FontSubsetterPluginOptions, FontAsset, FontAssetList } from "./types";
-import { buildFont, getSubsets, getUnicodes, getCss, swapFontAssets } from "../../utils";
+import {
+	buildFont,
+	getSubsets,
+	getUnicodes,
+	getCss,
+	swapFontAssets,
+} from "@ryelle/font-subset-utils";
 
 function getBufferFromAsset(asset: Source): Buffer {
 	// asset.source() can return string or Buffer
@@ -11,6 +17,16 @@ function getBufferFromAsset(asset: Source): Buffer {
 		return Buffer.from(source);
 	} else {
 		return source as Buffer;
+	}
+}
+
+function getStringFromAsset(asset: Source): string {
+	// asset.source() can return string or Buffer
+	const source = asset.source();
+	if (typeof source === "string") {
+		return source as string;
+	} else {
+		return source.toString();
 	}
 }
 
@@ -30,7 +46,7 @@ class FontSubsetPlugin {
 			compilation.hooks.processAssets.tapPromise(
 				{
 					name: "FontSubsetPluginCompilation",
-					stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
+					stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
 				},
 				async (assets: Record<string, Source>) => {
 					const fontTest = this.options.test || /\.(woff2?|ttf|otf|eot)$/i;
@@ -67,6 +83,10 @@ class FontSubsetPlugin {
 											: `${filePrefix}-${subset.name}-${bin}.woff2`;
 
 									const outputBuffer = await buildFont(buffer, slice);
+									// False if font is "empty" for this range, don't emit an empty file.
+									if (!outputBuffer) {
+										continue;
+									}
 									compilation.emitAsset(
 										outputFilename,
 										new RawSource(outputBuffer),
@@ -83,21 +103,27 @@ class FontSubsetPlugin {
 					}
 				},
 			);
-		});
 
-		compiler.hooks.emit.tap("FontSubsetPluginCSS", (compilation: Compilation) => {
-			Object.keys(compilation.assets).forEach((filename) => {
-				if (filename.endsWith(".css")) {
-					const asset = compilation.assets[filename];
-					const css = asset.source().toString();
-					try {
-						const newCss = swapFontAssets(css, this.fontAssets);
-						compilation.assets[filename] = new RawSource(newCss);
-					} catch (err) {
-						compilation.errors.push(err as Error);
+			compilation.hooks.processAssets.tap(
+				{
+					name: "FontSubsetPluginCSS",
+					stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
+				},
+				async (assets: Record<string, Source>) => {
+					for (const fileName in assets) {
+						if (!fileName.endsWith(".css")) {
+							continue;
+						}
+						const css = getStringFromAsset(assets[fileName]);
+						try {
+							const newCss = swapFontAssets(css, this.fontAssets);
+							compilation.updateAsset(fileName, new RawSource(newCss));
+						} catch (err) {
+							compilation.errors.push(err as Error);
+						}
 					}
-				}
-			});
+				},
+			);
 		});
 	}
 }
