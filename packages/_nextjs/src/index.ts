@@ -1,5 +1,5 @@
 import { NextConfig } from "next";
-import path from "node:path";
+import FontSubsetPlugin from "@ryelle/font-subset-webpack-plugin";
 
 // type PluginOptions = Record<string, unknown>;
 
@@ -11,12 +11,7 @@ export default function withMyExtension(
 		...nextConfig,
 		// @ts-expect-error - Undefined arguments.
 		webpack(config, opts) {
-			config.module.rules.push({
-				test: /\.(woff2?|ttf|eot|svg)$/,
-				use: {
-					loader: path.resolve("./loader.js"),
-				},
-			});
+			config.plugins.push(new FontSubsetPlugin(opts));
 
 			if (typeof nextConfig.webpack === "function") {
 				return nextConfig.webpack(config, opts);

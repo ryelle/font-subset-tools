@@ -18,9 +18,6 @@
 	],
 	"author": "ryelle",
 	"license": "GPL-2.0-or-later",
-	"devDependencies": {
-		"@ryelle/font-subset-loader": "^1.0.0"
-	},
 	"peerDependencies": {
 		"next": "^15.0.0"
 	}
