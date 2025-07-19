@@ -42,7 +42,6 @@ export function getCss(fontBuffer: Buffer, filePath: string, unicodes: Array<str
 	css.push(`\tfont-weight: ${metadata.weight};`);
 	css.push("\tfont-display: swap;");
 	css.push(`\tsrc: url("${path.basename(filePath)}") format("${metadata.format}");`);
-	css.push(`\tunicode-range: ${metadata.unicodeRange};`);
 	css.push(`\tunicode-range: ${getUnicodeRange(unicodes)};`);
 	css.push("}");
 
