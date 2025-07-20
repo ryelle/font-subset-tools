@@ -108,6 +108,11 @@ class FontSubsetPlugin {
 							continue;
 						}
 						const css = getStringFromAsset(assets[fileName]);
+						// Can skip over anything that doesn't have font-face rules.
+						if (!css.includes("@font-face")) {
+							continue;
+						}
+
 						try {
 							const newCss = swapFontAssets(css, this.fontAssets);
 							compilation.updateAsset(fileName, new RawSource(newCss));
