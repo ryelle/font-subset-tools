@@ -75,14 +75,13 @@ class FontSubsetPlugin {
 										unicodes.length === 1
 											? `${filePrefix}-${subset.name}.woff2`
 											: `${filePrefix}-${subset.name}-${bin}.woff2`;
-
 									const outputBuffer = await buildFont(buffer, slice);
 									// False if font is "empty" for this range, don't emit an empty file.
 									if (!outputBuffer) {
 										continue;
 									}
 									compilation.emitAsset(
-										outputFilename,
+										path.dirname(fileName) + "/" + outputFilename,
 										new RawSource(outputBuffer),
 									);
 									const css = getCss(outputBuffer, outputFilename, slice);
