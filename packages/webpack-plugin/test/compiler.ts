@@ -25,13 +25,6 @@ export function compiler(
 					test: /\.css$/,
 					use: [MiniCssExtractPlugin.loader, "css-loader"],
 				},
-				{
-					test: /\.(woff2?|ttf|otf|eot|svg)$/i,
-					type: "asset/resource",
-					generator: {
-						filename: "[name][ext]",
-					},
-				},
 			],
 		},
 	});

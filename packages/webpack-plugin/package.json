@@ -8,6 +8,7 @@
 	"scripts": {
 		"build": "tsc",
 		"prepublishOnly": "npm run build",
+		"pretest": "npm run build",
 		"test": "jest -c ../../jest.config.js packages/webpack-plugin"
 	},
 	"keywords": [

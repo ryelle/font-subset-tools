@@ -28,7 +28,9 @@ export function swapFontAssets(css: string, fontAssets: FontAssetList): string {
 		},
 		leave: (node, item, list) => {
 			if (node.name === "font-face") {
-				const replacement = fontAssets.find(({ source }) => currentFont === source);
+				const replacement = fontAssets.find(
+					({ source }) => currentFont === path.basename(source),
+				);
 				if (!replacement) {
 					return;
 				}

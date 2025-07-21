@@ -57,7 +57,9 @@ class FontSubsetPlugin {
 						}
 
 						for (const fileName in assets) {
-							if (!fontTest.test(fileName)) {
+							const res = compilation.getAsset(fileName);
+							const sourceFilename = res?.info?.sourceFilename || "";
+							if (!fontTest.test(sourceFilename)) {
 								continue;
 							}
 							const buffer: Buffer = getBufferFromAsset(assets[fileName]);
