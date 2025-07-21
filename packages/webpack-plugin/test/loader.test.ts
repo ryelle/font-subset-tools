@@ -127,9 +127,35 @@ describe("Loader", () => {
 
 		// No change to the CSS.
 		const output = getAssetOutput(stats, "main.css");
+		expect(output).not.toContain("unicode-range");
 		expect(output).not.toContain("-korean-");
-		expect(output).not.toContain("U+ACE0");
-		expect(output).not.toContain("U+C591");
-		expect(output).not.toContain("U+C774");
+	});
+
+	test("Don't update CSS if no subsets are passed", async () => {
+		const stats = await compiler("lat-cyr-example.js", {
+			test: /\.(woff2?|ttf|otf|eot)$/i,
+			subsets: [],
+		});
+		const assets = stats?.compilation.getAssets() || [];
+
+		// No fonts.
+		const fontAssets = assets.filter((a) => a.name.endsWith(".woff2"));
+		expect(fontAssets).toHaveLength(0);
+
+		// No change to the CSS.
+		const output = getAssetOutput(stats, "main.css");
+		expect(output).not.toContain("unicode-range");
+	});
+
+	test("Don't update CSS if only invalid subsets are passed", async () => {
+		const stats = await compiler("lat-cyr-example.js", {
+			test: /\.(woff2?|ttf|otf|eot)$/i,
+			subsets: ["fakelang", "anotherfake"],
+		});
+		const assets = stats?.compilation.getAssets() || [];
+
+		// No fonts.
+		const fontAssets = assets.filter((a) => a.name.endsWith(".woff2"));
+		expect(fontAssets).toHaveLength(0);
 	});
 });

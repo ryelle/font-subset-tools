@@ -51,6 +51,10 @@ class FontSubsetPlugin {
 					for (const opt of this.options) {
 						const fontTest = opt.test || /\.(woff2?|ttf|otf|eot)$/i;
 						const validSubsets = opt.subsets || [];
+						// No subsets requested, nothing to do.
+						if (!validSubsets.length) {
+							return;
+						}
 
 						for (const fileName in assets) {
 							if (!fontTest.test(fileName)) {
@@ -66,10 +70,7 @@ class FontSubsetPlugin {
 								const subsets = await getSubsets();
 								for (let i = 0; i < subsets.length; i++) {
 									const subset = subsets[i];
-									if (
-										validSubsets.length &&
-										!validSubsets.includes(subset.name)
-									) {
+									if (!validSubsets.includes(subset.name)) {
 										continue;
 									}
 									const unicodes = await getUnicodes(subset);
