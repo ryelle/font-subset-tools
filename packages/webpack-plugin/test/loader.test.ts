@@ -82,7 +82,39 @@ describe("Loader", () => {
 		expect(output).toContainOnce("U+C9C0");
 	});
 
-	test("Not update CSS if font doesn't support subset", async () => {
+	test("Update CSS with different rules for different fonts", async () => {
+		const stats = await compiler("multi-example.js", [
+			{
+				test: /noto-kr-font\.ttf$/i,
+				subsets: ["korean"],
+			},
+			{
+				test: /noto-font\.ttf$/i,
+				subsets: ["latin"],
+			},
+		]);
+		const assets = stats?.compilation.getAssets() || [];
+
+		// One subsets + two subset-slices
+		const fontAssets = assets.filter((a) => a.name.endsWith(".woff2"));
+		expect(fontAssets).toHaveLength(3);
+
+		// Check the CSS for font name and unicode ranges.
+		const output = getAssetOutput(stats, "main.css");
+		expect(output).toContain("-korean-");
+		expect(output).toContainOnce("U+ACE0");
+		expect(output).toContainOnce("U+C591");
+		expect(output).toContainOnce("U+C774");
+		expect(output).toContainOnce("U+AC15");
+		expect(output).toContainOnce("U+C544");
+		expect(output).toContainOnce("U+C9C0");
+		expect(output).toContain("-latin.woff2");
+		expect(output).toContainOnce("U+41");
+		expect(output).toContainOnce("U+43");
+		expect(output).toContainOnce("U+54");
+	});
+
+	test("Don't update CSS if font doesn't support subset", async () => {
 		const stats = await compiler("lat-cyr-example.js", {
 			test: /\.(woff2?|ttf|otf|eot)$/i,
 			subsets: ["korean"],

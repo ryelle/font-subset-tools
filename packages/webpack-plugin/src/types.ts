@@ -3,6 +3,8 @@ export type FontSubsetterPluginOptions = {
 	subsets?: Array<string>;
 };
 
+export type FontSubsetterPluginOptionList = Array<FontSubsetterPluginOptions>;
+
 export type CSSList = Record<string, string>;
 
 export type FontAsset = {

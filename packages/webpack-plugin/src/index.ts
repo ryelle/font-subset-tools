@@ -1,7 +1,12 @@
 import path from "node:path";
 import { Compiler, Compilation } from "webpack";
 import { Source, RawSource } from "webpack-sources";
-import { FontSubsetterPluginOptions, FontAsset, FontAssetList } from "./types";
+import {
+	FontSubsetterPluginOptionList,
+	FontSubsetterPluginOptions,
+	FontAsset,
+	FontAssetList,
+} from "./types";
 import { buildFont, getSubsets, getUnicodes, getCssData, swapFontAssets } from "./utils";
 
 function getBufferFromAsset(asset: Source): Buffer {
@@ -25,11 +30,11 @@ function getStringFromAsset(asset: Source): string {
 }
 
 class FontSubsetPlugin {
-	private options: FontSubsetterPluginOptions;
+	private options: FontSubsetterPluginOptionList;
 	private fontAssets: FontAssetList;
 
-	constructor(options: FontSubsetterPluginOptions = {}) {
-		this.options = options;
+	constructor(options: FontSubsetterPluginOptionList | FontSubsetterPluginOptions = {}) {
+		this.options = Array.isArray(options) ? options : [options];
 		this.fontAssets = [];
 	}
 
@@ -43,56 +48,61 @@ class FontSubsetPlugin {
 					stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
 				},
 				async (assets: Record<string, Source>) => {
-					const fontTest = this.options.test || /\.(woff2?|ttf|otf|eot)$/i;
-					const validSubsets = this.options.subsets || [];
+					for (const opt of this.options) {
+						const fontTest = opt.test || /\.(woff2?|ttf|otf|eot)$/i;
+						const validSubsets = opt.subsets || [];
 
-					for (const fileName in assets) {
-						if (!fontTest.test(fileName)) {
-							continue;
-						}
-						const buffer: Buffer = getBufferFromAsset(assets[fileName]);
-						const fontAsset: FontAsset = {
-							source: fileName,
-							subsets: [],
-						};
+						for (const fileName in assets) {
+							if (!fontTest.test(fileName)) {
+								continue;
+							}
+							const buffer: Buffer = getBufferFromAsset(assets[fileName]);
+							const fontAsset: FontAsset = {
+								source: fileName,
+								subsets: [],
+							};
 
-						try {
-							const subsets = await getSubsets();
-							for (let i = 0; i < subsets.length; i++) {
-								const subset = subsets[i];
-								if (validSubsets.length && !validSubsets.includes(subset.name)) {
-									continue;
-								}
-								const unicodes = await getUnicodes(subset);
-								if (!unicodes.length) {
-									continue;
-								}
-								let bin;
-								for (bin = 0; bin < unicodes.length; bin++) {
-									const slice = unicodes[bin];
-									const filePrefix = path.parse(fileName).name;
-									const outputFilename =
-										unicodes.length === 1
-											? `${filePrefix}-${subset.name}.woff2`
-											: `${filePrefix}-${subset.name}-${bin}.woff2`;
-									const outputBuffer = await buildFont(buffer, slice);
-									// False if font is "empty" for this range, don't emit an empty file.
-									if (!outputBuffer) {
+							try {
+								const subsets = await getSubsets();
+								for (let i = 0; i < subsets.length; i++) {
+									const subset = subsets[i];
+									if (
+										validSubsets.length &&
+										!validSubsets.includes(subset.name)
+									) {
 										continue;
 									}
-									compilation.emitAsset(
-										path.dirname(fileName) + "/" + outputFilename,
-										new RawSource(outputBuffer),
-									);
-									const css = getCssData(outputBuffer, outputFilename, slice);
-									fontAsset.subsets.push({ file: outputFilename, css: css });
+									const unicodes = await getUnicodes(subset);
+									if (!unicodes.length) {
+										continue;
+									}
+									let bin;
+									for (bin = 0; bin < unicodes.length; bin++) {
+										const slice = unicodes[bin];
+										const filePrefix = path.parse(fileName).name;
+										const outputFilename =
+											unicodes.length === 1
+												? `${filePrefix}-${subset.name}.woff2`
+												: `${filePrefix}-${subset.name}-${bin}.woff2`;
+										const outputBuffer = await buildFont(buffer, slice);
+										// False if font is "empty" for this range, don't emit an empty file.
+										if (!outputBuffer) {
+											continue;
+										}
+										compilation.emitAsset(
+											path.dirname(fileName) + "/" + outputFilename,
+											new RawSource(outputBuffer),
+										);
+										const css = getCssData(outputBuffer, outputFilename, slice);
+										fontAsset.subsets.push({ file: outputFilename, css: css });
+									}
 								}
+							} catch (err) {
+								compilation.errors.push(err as Error);
 							}
-						} catch (err) {
-							compilation.errors.push(err as Error);
-						}
 
-						this.fontAssets.push(fontAsset);
+							this.fontAssets.push(fontAsset);
+						}
 					}
 				},
 			);

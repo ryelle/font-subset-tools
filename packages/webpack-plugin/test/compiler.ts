@@ -3,13 +3,13 @@ import webpack from "webpack";
 import { createFsFromVolume, Volume } from "memfs";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import FontSubsetPlugin from "../dist";
-import { FontSubsetterPluginOptions } from "../dist/types";
+import { FontSubsetterPluginOptionList, FontSubsetterPluginOptions } from "../dist/types";
 
 const outputFileSystem = createFsFromVolume(new Volume());
 
 export function compiler(
 	fixture: string,
-	options: FontSubsetterPluginOptions = {},
+	options: FontSubsetterPluginOptionList | FontSubsetterPluginOptions = {},
 ): Promise<webpack.Stats> {
 	const compiler = webpack({
 		context: __dirname,
@@ -24,6 +24,13 @@ export function compiler(
 				{
 					test: /\.css$/,
 					use: [MiniCssExtractPlugin.loader, "css-loader"],
+				},
+				{
+					test: /\.(woff2?|ttf|otf|eot|svg)$/i,
+					type: "asset/resource",
+					generator: {
+						filename: "[name][ext]",
+					},
 				},
 			],
 		},

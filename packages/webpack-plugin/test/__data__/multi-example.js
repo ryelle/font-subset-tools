@@ -1,0 +1,1 @@
+require("./multi-style.css");
