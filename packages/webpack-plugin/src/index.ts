@@ -123,7 +123,6 @@ class FontSubsetPlugin {
 						if (!css.includes("@font-face")) {
 							continue;
 						}
-
 						try {
 							const newCss = swapFontAssets(css, this.fontAssets);
 							compilation.updateAsset(fileName, new RawSource(newCss));
@@ -138,4 +137,4 @@ class FontSubsetPlugin {
 }
 
 export { FontSubsetPlugin as default };
-export type { FontSubsetterPluginOptions };
+export type { FontSubsetterPluginOptions, FontSubsetterPluginOptionList };

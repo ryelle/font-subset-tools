@@ -1,11 +1,12 @@
 import { NextConfig } from "next";
 import FontSubsetPlugin, {
+	type FontSubsetterPluginOptionList,
 	type FontSubsetterPluginOptions,
 } from "@ryelle/font-subset-webpack-plugin";
 
 export default function withFontSubset(
 	nextConfig: NextConfig = {},
-	options: FontSubsetterPluginOptions = {},
+	options: FontSubsetterPluginOptionList | FontSubsetterPluginOptions = {},
 ) {
 	return {
 		...nextConfig,
