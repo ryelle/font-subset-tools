@@ -1,6 +1,5 @@
-import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 import { fontace } from "fontace";
-import { getCssFromFile, getUnicodeRange } from "../../src/utils/get-css";
+import { getCssData, getUnicodeRange } from "../../src/utils/get-css";
 import { readFileSync } from "node:fs";
 
 jest.mock("node:fs", () => {
@@ -21,7 +20,7 @@ const FONT = {
 	weight: "300 800",
 };
 
-describe("getCssFromFile", () => {
+describe("getCssData", () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		(fontace as jest.Mock).mockImplementation(() => {
@@ -33,13 +32,12 @@ describe("getCssFromFile", () => {
 	});
 
 	test("returns CSS and unicode for a variable font", () => {
-		const css = getCssFromFile("./font.woff2", ["A", "B", "C"]);
-		expect(css).toContain("@font-face");
-		expect(css).toContain('font-family: "MockFont";');
-		expect(css).toContain("font-style: normal;");
-		expect(css).toContain("font-weight: 300 800;");
-		expect(css).toContain("unicode-range: U+41-43;");
-		expect(css).toContain('src: url("font.woff2") format("woff2");');
+		const fileName = "./font.woff2";
+		const fontBuffer = readFileSync(fileName);
+		const css = getCssData(fontBuffer, fileName, ["A", "B", "C"]);
+		expect(css).toHaveProperty("unicode-range", "U+41-43");
+		expect(css).toHaveProperty("src", 'url("font.woff2") format("woff2")');
+		expect(Object.keys(css)).toHaveLength(2);
 	});
 
 	test("returns CSS and unicode for an italic font", () => {
@@ -49,13 +47,12 @@ describe("getCssFromFile", () => {
 				style: "italic",
 			};
 		});
-		const css = getCssFromFile("./font.woff2", ["A", "B", "C"]);
-		expect(css).toContain("@font-face");
-		expect(css).toContain('font-family: "MockFont";');
-		expect(css).toContain("font-style: italic;");
-		expect(css).toContain("font-weight: 300 800;");
-		expect(css).toContain("unicode-range: U+41-43;");
-		expect(css).toContain('src: url("font.woff2") format("woff2");');
+		const fileName = "./font.woff2";
+		const fontBuffer = readFileSync(fileName);
+		const css = getCssData(fontBuffer, fileName, ["A", "B", "C"]);
+		expect(css).toHaveProperty("unicode-range", "U+41-43");
+		expect(css).toHaveProperty("src", 'url("font.woff2") format("woff2")');
+		expect(Object.keys(css)).toHaveLength(2);
 	});
 
 	test("returns CSS and unicode for a regular font", () => {
@@ -65,18 +62,21 @@ describe("getCssFromFile", () => {
 				weight: "400",
 			};
 		});
-		const css = getCssFromFile("./font.woff2", ["A", "B", "C"]);
-		expect(css).toContain("@font-face");
-		expect(css).toContain('font-family: "MockFont";');
-		expect(css).toContain("font-style: normal;");
-		expect(css).toContain("font-weight: 400;");
-		expect(css).toContain("unicode-range: U+41-43;");
-		expect(css).toContain('src: url("font.woff2") format("woff2");');
+		const fileName = "./font.woff2";
+		const fontBuffer = readFileSync(fileName);
+		const css = getCssData(fontBuffer, fileName, ["A", "B", "C"]);
+		expect(css).toHaveProperty("unicode-range", "U+41-43");
+		expect(css).toHaveProperty("src", 'url("font.woff2") format("woff2")');
+		expect(Object.keys(css)).toHaveLength(2);
 	});
 
 	test("returns CSS with different unicode-range for different unicodes", () => {
-		const css = getCssFromFile("./font.woff2", ["0", "1", "2"]);
-		expect(css).toContain("unicode-range: U+30-32");
+		const fileName = "./font.woff2";
+		const fontBuffer = readFileSync(fileName);
+		const css = getCssData(fontBuffer, fileName, ["0", "1", "2"]);
+		expect(css).toHaveProperty("unicode-range", "U+30-32");
+		expect(css).toHaveProperty("src", 'url("font.woff2") format("woff2")');
+		expect(Object.keys(css)).toHaveLength(2);
 	});
 });
 

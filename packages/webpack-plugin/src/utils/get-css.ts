@@ -1,6 +1,6 @@
 import { fontace } from "fontace";
 import path from "node:path";
-import { readFileSync } from "node:fs";
+import { type CSSList } from "../types";
 
 export function getUnicodeRange(unicodes: Array<string>): string {
 	unicodes.sort();
@@ -28,22 +28,13 @@ export function getUnicodeRange(unicodes: Array<string>): string {
 	return rangeString.replace(/,$/, "");
 }
 
-export function getCssFromFile(filePath: string, unicodes: Array<string>): string {
-	const fontBuffer = readFileSync(filePath);
-	return getCss(fontBuffer, filePath, unicodes);
-}
-
-export function getCss(fontBuffer: Buffer, filePath: string, unicodes: Array<string>): string {
+export function getCssData(fontBuffer: Buffer, filePath: string, unicodes: Array<string>): CSSList {
 	const metadata = fontace(fontBuffer);
 
-	const css = ["@font-face {"];
-	css.push(`\tfont-family: "${metadata.family}";`);
-	css.push(`\tfont-style: ${metadata.style};`);
-	css.push(`\tfont-weight: ${metadata.weight};`);
-	css.push("\tfont-display: swap;");
-	css.push(`\tsrc: url("${path.basename(filePath)}") format("${metadata.format}");`);
-	css.push(`\tunicode-range: ${getUnicodeRange(unicodes)};`);
-	css.push("}");
+	const css = {
+		src: `url("${path.basename(filePath)}") format("${metadata.format}")`,
+		"unicode-range": `${getUnicodeRange(unicodes)}`,
+	};
 
-	return css.join("\n");
+	return css;
 }

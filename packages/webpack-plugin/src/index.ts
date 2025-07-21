@@ -2,7 +2,7 @@ import path from "node:path";
 import { Compiler, Compilation } from "webpack";
 import { Source, RawSource } from "webpack-sources";
 import { FontSubsetterPluginOptions, FontAsset, FontAssetList } from "./types";
-import { buildFont, getSubsets, getUnicodes, getCss, swapFontAssets } from "./utils";
+import { buildFont, getSubsets, getUnicodes, getCssData, swapFontAssets } from "./utils";
 
 function getBufferFromAsset(asset: Source): Buffer {
 	// asset.source() can return string or Buffer
@@ -84,7 +84,7 @@ class FontSubsetPlugin {
 										path.dirname(fileName) + "/" + outputFilename,
 										new RawSource(outputBuffer),
 									);
-									const css = getCss(outputBuffer, outputFilename, slice);
+									const css = getCssData(outputBuffer, outputFilename, slice);
 									fontAsset.subsets.push({ file: outputFilename, css: css });
 								}
 							}
