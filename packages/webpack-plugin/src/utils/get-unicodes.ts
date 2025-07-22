@@ -20,7 +20,7 @@ export async function getUnicodes(subset: FileItem): Promise<Array<Array<string>
 					_line = lines.next();
 					while (_line !== false) {
 						const line = _line.toString();
-						if (/}/.test(line)) {
+						if (/^}$/.test(line)) {
 							unicodes.push(_unicodes);
 							break;
 						}

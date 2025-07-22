@@ -69,4 +69,12 @@ describe("getUnicodes", () => {
 		});
 		expect(result).toEqual([["ね", "こ"]]);
 	});
+
+	test("It should parse slices with bracket characters", async () => {
+		const result = await getUnicodes({
+			name: "traditional-chinese_default.txt",
+			path: `${CACHE_PATH}/slices/traditional-chinese_default.txt`,
+		});
+		expect(result).toEqual([["貓", "{", "}", "狗"]]);
+	});
 });

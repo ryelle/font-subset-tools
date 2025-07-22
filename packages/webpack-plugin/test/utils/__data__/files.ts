@@ -25,6 +25,9 @@ MOCK_FILE_INFO[`${CACHE_PATH}/slices/traditional-chinese_default.txt`] =
 # 176 codepoints FreqRange target_len 50 actual_len 176
 subsets {
     codepoints: 35987 # 貓 CJK UNIFIED IDEOGRAPH-8C93
+	codepoints: 123 # { LEFT CURLY BRACKET
+	codepoints: 125 # } RIGHT CURLY BRACKET
+    codepoints: 29399 # 狗 CJK UNIFIED IDEOGRAPH-72D7
 }
 `;
 MOCK_FILE_INFO[`${CACHE_PATH}/slices/japanese_default.txt`] =
