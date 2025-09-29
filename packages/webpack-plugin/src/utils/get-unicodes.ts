@@ -10,7 +10,6 @@ export async function getUnicodes(subset: FileItem): Promise<Array<Array<string>
 	const unicodes = [];
 	if (subset.path.includes("/slices/")) {
 		const lines = new lineByLine(subset.path);
-		let prevLine = "";
 		let _line = lines.next();
 		while (_line !== false) {
 			const line = _line.toString();
@@ -33,8 +32,6 @@ export async function getUnicodes(subset: FileItem): Promise<Array<Array<string>
 					}
 				}
 			}
-
-			prevLine = line;
 			_line = lines.next();
 		}
 	} else {
