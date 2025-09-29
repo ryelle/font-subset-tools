@@ -26,9 +26,6 @@
 		"typescript": "^5.0.0",
 		"typescript-eslint": "^8.36.0"
 	},
-	"peerDependencies": {
-		"next": "^15.0.0"
-	},
 	"workspaces": [
 		"packages/*"
 	]

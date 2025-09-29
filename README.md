@@ -2,26 +2,10 @@
 
 A monorepo for some tools to subset font files based on language support.
 
-Nothing works here yet.
-
-## Installation
-
-@todo
-
-## Usage
-
 ### Webpack loader
 
-@todo
+[See Webpack Loader package readme.](https://github.com/ryelle/font-subset-tools/tree/main/packages/webpack-plugin)
 
 ### Next.js Plugin
 
-Edit your `next.config.js`:
-
-```js
-const withFontSubset = require('@ryelle/next-font-subset');
-
-module.exports = withFontSubset({
-  // ...your Next.js config
-});
-```
+Not working yet, use webpack process.
